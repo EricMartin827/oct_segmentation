@@ -17,6 +17,7 @@ warnings.filterwarnings("ignore")
 ################################################################################
 
 from staging_utils import (
+    build_wandb_monitor,
     create_path_to_new_weight_file,
     find_path_to_weight_file,
     parse_user_inputs,
@@ -51,8 +52,9 @@ def describe_system_settings(device: str):
 
 def main():
 
-    #device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    device = "cpu"
+    device = torch.device(
+        "cuda" if torch.cuda.is_available() and not args.use_cpu else "cpu")
+
     describe_system_settings(device)
 
     args = parse_user_inputs()
@@ -60,20 +62,21 @@ def main():
     training, validation, testing = build_data_loaders(args)
 
     train_set_size, train_loader = training
-    val_set_size, val_loader     = validation
+    val_set_size, val_loader = validation
     _, test_loader   = testing
-
-    model = build_model(args, device)
 
     if args.train:
 
-        print(f"Running In Training Mode. This May Take A While...")
+        project_name = args.wandb_project_name
+        print(f"Training {project_name}. This May Take A While...")
 
+        monitor, config = build_wandb_monitor(args)
+        model = build_model(args, config=config, device=device)
         new_weight_file = create_path_to_new_weight_file(args)
-        loss_function = build_loss_function(args)
-        optimizer = build_optimizer(args, model)
+        loss_function = build_loss_function(args, config)
+        optimizer = build_optimizer(args, model, config)
         scheduler = build_scheduler(args, optimizer)
-        
+
         evaluator = build_train_evaluator(args, device)
 
         train(
@@ -85,7 +88,8 @@ def main():
             loss_function=loss_function,
             optimizer=optimizer,
             scheduler=scheduler,
-            max_epochs=args.epochs,
+            monitor=monitor,
+            max_epochs=config.epochs,
             evaluator=evaluator,
             best_model_weight_file=new_weight_file,
             device=device
@@ -93,6 +97,8 @@ def main():
     else:
 
         print(f"Running In Evaluation Mode.")
+
+        model = build_model(args, device=device)
 
         tuned_weight_file = find_path_to_weight_file(args)
         model.load_state_dict(torch.load(tuned_weight_file))

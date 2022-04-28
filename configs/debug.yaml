@@ -22,9 +22,9 @@ DataLoading:
 
 Model:
  model: unet
- unet_channels: [16, 32, 48, 96, 192]
- unet_strides: [2, 2, 2, 2] #1-8 for the first layers and 1-4 to last half
- unet_dropout: 0.2
+ channels: [16, 32, 48, 96, 192]
+ strides: [2, 2, 2, 2] #1-8 for the first layers and 1-4 to last half
+ dropout: 0.2
 
 Mode:
  train: False

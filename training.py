@@ -8,6 +8,8 @@ import torch
 import torchvision
 from torch.utils.tensorboard import SummaryWriter
 
+import wandb
+
 ################################################################################
 ################################# Local Imports ################################
 ################################################################################
@@ -24,6 +26,7 @@ def train(model,
           loss_function,
           optimizer,
           scheduler,
+          monitor,
           max_epochs,
           evaluator,
           best_model_weight_file,
@@ -64,7 +67,7 @@ def train(model,
 
     writer = SummaryWriter()
 
-    print("====Training====")
+    print(f"==== Training Over {max_epochs} Epochs ===")
 
     for epoch in range(1, max_epochs + 1):
 
@@ -92,7 +95,7 @@ def train(model,
             loss.backward()                       # compute gradients
             optimizer.step()                      # update model weights
 
-            step += 1 ### Don't lose track :) 
+            step += 1 ### Don't lose track :)
 
             lrs.append(optimizer.param_groups[0]["lr"]) # help optimization
 
@@ -103,12 +106,19 @@ def train(model,
             print(f"{step}/{temp}, train_loss: {loss.item():.4f}")
             step_id = (training_batches_per_epoch * epoch) + step
             writer.add_scalar("train_loss", loss.item(), step_id)
-        
+
         # Average the loss across number of batches (training steps)
         training_loss /= step
         training_loss_values.append(training_loss)
         print(f"epoch {epoch} average training loss: {training_loss:.4f}")
-        
+
+        ## Record Training Loss For Weights and Bias Monitoring On
+        ## Every Epoch
+        train_metrics = {
+            "train/epoch": epoch,
+            "train/train_loss": training_loss
+        }
+
         # Start Evaluation by putting modle in evaluation mode
         model.eval()
         validation_loss, step = 0, 0
@@ -132,13 +142,23 @@ def train(model,
             writer.add_scalar("val_loss", loss.item(), step_id)
 
         # Average the loss across number of batches
-        validation_loss /= step 
+        validation_loss /= step
         validation_loss_values.append(validation_loss)
         print(f"epoch {epoch} average validation loss: {validation_loss:.4f}")
 
-        # At specific intervals, compute dice metric (expensive operation)
-        if (evaluator.should_run_at(epoch)):
+        ## Record Validation Loss For Weights and Bias Monitoring On
+        ## Every Epoch
+        val_metrics = {
+            "val/epoch": epoch,
+            "val/val_loss": validation_loss
+        }
 
+        # At specific intervals, compute dice metric (expensive operation)
+        if not evaluator.should_run_at(epoch):
+
+            monitor.log({**train_metrics, **val_metrics})
+
+        else:
             print("-" * 20)
             print(f"Running Metric Evaluation For Epoch {epoch}")
 
@@ -146,11 +166,18 @@ def train(model,
 
             print(f"Evaluation Metric Score {metric} @ Epoch {epoch}")
             print("-" * 20)
-            
+
             metric_values.append(metric)
-            
+
+            dice_metrics = {
+                "DiceRNFL/epoch":epoch,
+                "DiceRNFL": metric
+            }
+
+            monitor.log({**train_metrics, **val_metrics, **dice_metrics})
+
             if metric > best_metric:
-        
+
                 print("-" * 20)
 
                 print(f"Saving A New Best Metric Model @ Epoch {epoch}")
@@ -162,11 +189,11 @@ def train(model,
 
                 print(f"Weight File Saved @ {best_model_weight_file}")
                 writer.add_scalar("val_mean_dice", metric, epoch)
-
                 print("-" * 20)
 
+
     print("-" * 10)
-    print("--Traning Complete--") 
+    print("--Traning Complete--")
     print("-" * 10)
 
     print(f"Best Class 2 Dice Score {best_metric:.4f} at epoch: {best_metric_epoch}")

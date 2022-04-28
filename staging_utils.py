@@ -27,6 +27,8 @@ from monai.losses import (
     DiceCELoss
 )
 
+import wandb
+
 ################################################################################
 ################################# Local Imports ################################
 ################################################################################
@@ -60,6 +62,32 @@ def parse_user_inputs():
 
     return args
 
+def build_wandb_monitor(args):
+
+    project_name = args.wandb_project_name
+    if not project_name:
+        raise ValueError("No W&B Project Name Specified")
+
+    wandb.init(
+
+        project=project_name,
+
+        entity="oct_segmentation_uncertainty", ### Group Name
+
+        config = {
+            "learning_rate": args.learning_rate,
+            "epochs": args.epochs,
+            "batch_size": args.batch_size,
+            "dropout": args.dropout,
+            "loss_function": args.loss_function,
+            "optimizer": "adam",
+            "channels": args.channels,
+            "stides": args.strides,
+            "include_background": args.include_background
+        }
+    )
+
+    return wandb, wandb.config
 
 def build_data_loaders(args):
 
@@ -177,28 +205,35 @@ def find_path_to_weight_file(args):
     raise ValueError(f"Failed To Find Weights @ {weight_file}")
 
 
-def build_model(args, device: str):
+def build_model(args, config=None, device="cpu"):
+
+    inputs = (args, config)[config is not None]
 
     if args.model == "unet":
+
         model= UNet(
             spatial_dims=2,
             in_channels=1,
             out_channels=3,
-            channels=tuple(args.unet_channels),
-            strides=tuple(args.unet_strides),
+            channels=inputs.channels,
+            strides=inputs.strides,
             norm=Norm.BATCH,
-            dropout=args.unet_dropout
+            dropout=inputs.strides
         ).to(device)
+
     else:
         raise ValueError(f"Unsupported Model: {args.model}")
 
     return model
 
 
-def build_loss_function(args):
+def build_loss_function(args, config=None):
 
-    loss = args.loss_function
-    include_background = args.loss_include_background
+    inputs = (args, config)[config is not None]
+
+    loss = inputs.loss_function
+    include_background = inputs.loss_include_background
+
     to_onehot = args.loss_to_onehot
     softmax = args.loss_softmax
 
@@ -218,10 +253,11 @@ def build_loss_function(args):
     raise ValueError(f"Unsupported Loss Function: {loss}")
 
 
-def build_optimizer(args, model):
-    if (args.learning_rate == 0):
+def build_optimizer(args, model, config=None):
+    inputs = (args, config)[config is not None]
+    if (inputs.learning_rate == 0):
         raise ValueError("Invalid Input! Learning Rate is Zero!")
-    return Adam(model.parameters(), args.learning_rate)
+    return Adam(model.parameters(), inputs.learning_rate)
 
 
 def build_scheduler(args, optimizer):
