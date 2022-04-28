@@ -1,0 +1,8 @@
+oct_segmetation
+
+Before Running Unzip data.zip in the data directory.
+
+TODO:
+	* Set Up A Script For Automatically Install Python Environment
+	* Set Up Space For Jupyert-Notebooks To View Data and Prototype
+	* Integrate Weights And Biases

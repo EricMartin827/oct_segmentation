@@ -1,0 +1,8 @@
+*__pycache__*
+*~
+*.tiff
+*.zip
+models/Model_*
+reports/*
+.vscode/*
+runs/

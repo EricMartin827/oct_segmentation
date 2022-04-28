@@ -1,0 +1,71 @@
+Inputs:
+ data_path_dir: ./data/full_window #Data location
+ model_dir: ./models #Data storage
+
+DataLoading:
+
+ batch_size: 1
+ num_workers: 0 ### How Many Internal Threads For Loading Data (should be 0 if pin memory True)
+ num_classes: 3 ### Number Of Classification in Labels
+
+ num_train_samples: 4 ### -1 -> All Samples
+ num_val_samples: 4   ### -1 -> All Samples
+ num_test_samples: 4  ### -1 -> All Samples
+
+ pin_train_data: True  ### Enable Faster Transfer to GPU
+ pin_val_data: True
+ pin_test_data: True
+
+ shuffle_train_data: True ### Shuffle The Data From Loader
+ shuffle_val_data: False
+ shuffle_test_data: False
+
+Model:
+ model: unet
+ unet_channels: [16, 32, 48, 96, 192]
+ unet_strides: [2, 2, 2, 2] #1-8 for the first layers and 1-4 to last half
+ unet_dropout: 0.2
+
+Mode:
+ train: False
+ path_to_weights: models/test_load.pth
+ new_weights_file: best_metric_model_weights.pth
+
+Train:
+ batch_size: 16
+ learning_rate: 0.001 #0.1 #original is 0.1
+ reg: 0.00001 #0.001 # orig is 0.0001
+ epochs: 2
+ min_learning_rate: 0.000001
+ patience: 20
+
+Loss:
+ loss_function: DiceFocalLoss
+ loss_include_background: True
+ loss_to_onehot: True
+ loss_softmax: True
+
+Evaluate:
+  report_base_dir: "reports"
+  
+### Can Generate A Report on Validation Data
+TrainEvaluate:
+ train_val_interval: 1
+ train_k_stochastic_passes: 1
+ train_preds_to_visualize: 0
+ train_uncertainty: False
+ train_report_file: "training_validation_report.xlsx"
+ loss_curve_image_file: "reports/test.png"
+ visualize_loss_curve: False
+
+ValEvaluate:
+ val_k_stochastic_passes: 1
+ val_preds_to_visualize: 0
+ val_uncertainty: False
+ val_report_file: "val_resport.xlsx"
+
+TestEvaluate:
+ test_k_stochastic_passes: 1
+ test_preds_to_visualize: 0
+ test_uncertainty: False
+ test_report_file: "test_resport.xlsx"
