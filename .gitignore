@@ -5,4 +5,5 @@
 models/Model_*
 reports/*
 .vscode/*
-runs/
+runs/*
+wandb/*

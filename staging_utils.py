@@ -82,8 +82,8 @@ def build_wandb_monitor(args):
             "loss_function": args.loss_function,
             "optimizer": "adam",
             "channels": args.channels,
-            "stides": args.strides,
-            "include_background": args.include_background
+            "strides": args.strides,
+            "loss_include_background": args.loss_include_background
         }
     )
 
@@ -215,10 +215,10 @@ def build_model(args, config=None, device="cpu"):
             spatial_dims=2,
             in_channels=1,
             out_channels=3,
-            channels=inputs.channels,
-            strides=inputs.strides,
+            channels=tuple(inputs.channels),
+            strides=tuple(inputs.strides),
             norm=Norm.BATCH,
-            dropout=inputs.strides
+            dropout=inputs.dropout
         ).to(device)
 
     else:

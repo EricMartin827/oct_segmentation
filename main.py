@@ -52,12 +52,13 @@ def describe_system_settings(device: str):
 
 def main():
 
+    args = parse_user_inputs()
+
     device = torch.device(
-        "cuda" if torch.cuda.is_available() and not args.use_cpu else "cpu")
+        "cuda" if torch.cuda.is_available() and \
+        not args.use_cpu else "cpu")
 
     describe_system_settings(device)
-
-    args = parse_user_inputs()
 
     training, validation, testing = build_data_loaders(args)
 

@@ -1,3 +1,7 @@
+Misc:
+  use_cpu: True
+  wandb_project_name: "Eric-First_WANDB"
+
 Inputs:
  data_path_dir: ./data/full_window #Data location
  model_dir: ./models #Data storage
@@ -27,7 +31,7 @@ Model:
  dropout: 0.2
 
 Mode:
- train: False
+ train: True
  path_to_weights: models/test_load.pth
  new_weights_file: best_metric_model_weights.pth
 
