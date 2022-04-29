@@ -53,7 +53,7 @@ def describe_system_settings(device: str):
 def describe_model(model, loader):
     iterator = iter(loader)
     inputs, _ = next(iterator)
-    summary(model, input_size=inputs.shape[1:])
+    summary(model, input_size=inputs.shape)
 
 def main():
 
