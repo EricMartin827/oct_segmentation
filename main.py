@@ -9,7 +9,7 @@ import albumentations as A
 import monai
 import torch
 import warnings
-form torchinfo import summary
+from torchinfo import summary
 warnings.filterwarnings("ignore")
 
 ################################################################################
