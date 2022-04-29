@@ -9,7 +9,7 @@ import albumentations as A
 import monai
 import torch
 import warnings
-
+form torchinfo import summary
 warnings.filterwarnings("ignore")
 
 ################################################################################
@@ -77,7 +77,7 @@ def main():
         loss_function = build_loss_function(args, config)
         optimizer = build_optimizer(args, model, config)
         scheduler = build_scheduler(args, optimizer)
-
+        summary(model_unet,input_size=(args.batch_size,1,512,1024))
         evaluator = build_train_evaluator(args, device)
 
         train(
