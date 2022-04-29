@@ -1,5 +1,5 @@
 Misc:
-  use_cpu: True
+  use_cpu: False
   wandb_project_name: "Eric-First_WANDB"
 
 Inputs:
@@ -12,9 +12,9 @@ DataLoading:
  num_workers: 0 ### How Many Internal Threads For Loading Data (should be 0 if pin memory True)
  num_classes: 3 ### Number Of Classification in Labels
 
- num_train_samples: 4 ### -1 -> All Samples
- num_val_samples: 4   ### -1 -> All Samples
- num_test_samples: 4  ### -1 -> All Samples
+ num_train_samples: 1 ### -1 -> All Samples
+ num_val_samples: 1  ### -1 -> All Samples
+ num_test_samples: 1  ### -1 -> All Samples
 
  pin_train_data: True  ### Enable Faster Transfer to GPU
  pin_val_data: True
