@@ -115,7 +115,6 @@ def train(model,
         ## Record Training Loss For Weights and Bias Monitoring On
         ## Every Epoch
         train_metrics = {
-            "train/epoch": epoch,
             "train/train_loss": training_loss
         }
 
@@ -149,7 +148,6 @@ def train(model,
         ## Record Validation Loss For Weights and Bias Monitoring On
         ## Every Epoch
         val_metrics = {
-            "val/epoch": epoch,
             "val/val_loss": validation_loss
         }
 

@@ -50,6 +50,11 @@ def describe_system_settings(device: str):
     print(f'Monai Version: {monai.__version__}\n')
 
 
+def describe_model(model, loader):
+    iterator = iter(loader)
+    inputs, _ = next(iterator)
+    summary(model, input_size=inputs.shape)
+
 def main():
 
     args = parse_user_inputs()
@@ -77,8 +82,10 @@ def main():
         loss_function = build_loss_function(args, config)
         optimizer = build_optimizer(args, model, config)
         scheduler = build_scheduler(args, optimizer)
-        summary(model_unet,input_size=(args.batch_size,1,512,1024))
+        
         evaluator = build_train_evaluator(args, device)
+
+        describe_model(model, train_loader)
 
         train(
             model=model,
@@ -95,6 +102,7 @@ def main():
             best_model_weight_file=new_weight_file,
             device=device
             )
+
     else:
 
         print(f"Running In Evaluation Mode.")

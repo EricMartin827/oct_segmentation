@@ -89,28 +89,56 @@ def build_wandb_monitor(args):
 
     return wandb, wandb.config
 
-def build_data_loaders(args):
 
-    ### Local Helper For Configuring Augmentations Via Config
-    def build_augumentation_transforms(args):
+### Local Helper For Configuring Augmentations Via Config
+def build_augumentation_transforms(args, config):
 
-        #### Needed To Get Labels in [1, H, W] For Training Loop
-        def AddLabelChannel(labels, **params):
-            return labels.unsqueeze(dim=0)
+    #### Needed To Get Labels in [1, H, W] For Training Loop
+    def AddLabelChannel(labels, **params):
+        return labels.unsqueeze(dim=0)
 
-        transforms = A.Compose([
+    normal_transforms = A.Compose([
+        ToTensorV2(),
+        A.Lambda(name="Add Channel Dimension",
+                 mask=AddLabelChannel,
+                 always_apply=True)
+    ])
 
-            ###############################################
-            #### ADD Albumentation Augmentations Here #####
-            ###############################################
+    if not args.augment_training_data:
+        return (normal_transforms, normal_transforms, normal_transforms)
 
-            ToTensorV2(),
-            A.Lambda(name="Add Channel Dimension",
-                     mask=AddLabelChannel,
-                     always_apply=True)
-        ])
+    inputs = (args, config)[config is not None]
 
-        return (transforms, transforms, transforms)
+    rotation = inputs.aug_rotation
+    rotation_prob = inputs.aug_rotation_prob
+
+    x_shear = inputs.aug_affine_x_shear
+    y_shear = inputs.aug_affine_y_shear
+    affine_prob = inputs.aug_affine_prob
+
+    aug_train_transforms = A.Compose([
+
+        A.Rotate(
+            limit=(-rotation, rotation),
+            p=rotation_prob
+        ),
+        A.Affine(
+            shear=dict(
+                x=(-x_shear, x_shear),
+                y=(-y_shear, y_shear),
+                p=affine_prob
+            ),
+        ),
+
+        ToTensorV2(),
+        A.Lambda(name="Add Channel Dimension",
+                 mask=AddLabelChannel,
+                 always_apply=True)
+    ])
+
+    return (aug_train_transforms, normal_transforms, normal_transforms)
+
+def build_data_loaders(args, config=None):
 
     ### Local Helper For Making Sure Specifed Directory Structure
     ### Is Correct
@@ -136,7 +164,7 @@ def build_data_loaders(args):
     test_for_dir(test_data_label_dir)
 
     train_transforms, val_transforms, test_transforms = \
-        build_augumentation_transforms(args)
+        build_augumentation_transforms(args, config)
 
     train_ds = OctDataset(train_data_image_dir,
                           train_data_label_dir,
@@ -181,6 +209,7 @@ def build_data_loaders(args):
         (len(train_ds), train_loader), \
         (len(val_ds),   val_loader), \
         (len(test_ds),  test_loader)
+
 
 def create_path_to_new_weight_file(args):
 
@@ -274,7 +303,7 @@ def build_train_evaluator(args, device):
     if base_dir and report_file:
         if not os.path.exists(base_dir):
             os.mkdir(base_dir)
-        report_file = os.path.join(base_dir, report_file)
+            report_file = os.path.join(base_dir, report_file)
     else:
         report_file = None
 
