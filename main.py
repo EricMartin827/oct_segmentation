@@ -78,12 +78,12 @@ def main():
 
         monitor, config = build_wandb_monitor(args)
         model = build_model(args, config=config, device=device)
-        new_weight_file = create_path_to_new_weight_file(args)
+        new_weight_file,model_dir = create_path_to_new_weight_file(args)
         loss_function = build_loss_function(args, config)
         optimizer = build_optimizer(args, model, config)
         scheduler = build_scheduler(args, optimizer)
         
-        evaluator = build_train_evaluator(args, device)
+        evaluator = build_train_evaluator(args, device,model_dir)
 
         describe_model(model, train_loader)
 
@@ -111,7 +111,7 @@ def main():
         tuned_weight_file = find_path_to_weight_file(args)
         model.load_state_dict(torch.load(tuned_weight_file))
 
-        val_eval, test_eval = build_test_evaluators(args, device)
+        val_eval, test_eval = build_test_evaluators(args, device, model_dir)
 
         val_eval(model, val_loader)
         test_eval(model, test_loader)

@@ -223,7 +223,7 @@ def create_path_to_new_weight_file(args):
     weight_file = os.path.join(model_dir, args.new_weights_file)
     print(f"Best Weights Will Be Stored @ {weight_file}")
 
-    return weight_file
+    return weight_file , model_dir
 
 def find_path_to_weight_file(args):
 
@@ -297,13 +297,17 @@ def build_scheduler(args, optimizer):
         min_lr=args.min_learning_rate)
 
 
-def build_train_evaluator(args, device):
+def build_train_evaluator(args, device, model_dir):
 
     base_dir, report_file = args.report_base_dir, args.train_report_file
-    if base_dir and report_file:
-        if not os.path.exists(base_dir):
-            os.mkdir(base_dir)
-            report_file = os.path.join(base_dir, report_file)
+    print('here')
+    if model_dir and report_file:
+        if not os.path.exists(model_dir):
+            os.mkdir(model_dir)
+        print('here2')
+        report_file = os.path.join(model_dir, report_file)
+        print(report_file)
+
     else:
         report_file = None
 
@@ -318,16 +322,16 @@ def build_train_evaluator(args, device):
     )
 
 
-def build_test_evaluators(args, device):
+def build_test_evaluators(args, device,model_dir):
 
     base_dir = args.report_base_dir
     val_report, test_report = args.val_report_file, args.test_report_file
-
-    if not base_dir:
+    
+    if not model_dir:
         raise ValueError(f"No Directory Specifed For Evaluation Results.")
 
-    if not os.path.exists(base_dir):
-        os.mkdir(base_dir)
+    if not os.path.exists(model_dir):
+        os.mkdir(model_dir)
 
     if (not val_report):
         raise ValueError(f"No Validation Report File Specified.")
@@ -335,8 +339,10 @@ def build_test_evaluators(args, device):
     if (not test_report):
         raise ValueError(f"No Validation Report File Specified.")
 
-    val_report = os.path.join(base_dir, val_report)
-    test_report = os.path.join(base_dir, test_report)
+    val_report = os.path.join(model_dir, val_report)
+    print('HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE')
+    print(val_report)
+    test_report = os.path.join(model_dir, test_report)
 
     return \
         Evaluator(
