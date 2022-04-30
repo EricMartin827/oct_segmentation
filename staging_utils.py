@@ -326,6 +326,14 @@ def build_test_evaluators(args, base_dir, device):
     val_report = os.path.join(base_dir, val_report)
     test_report = os.path.join(base_dir, test_report)
 
+
+    meta_dir = args.meta_path_dir
+    if (not os.path.exists(meta_dir)):
+        raise ValueError(f"No Meta Directory Detected")
+
+    val_meta_path = os.path.join(meta_dir, "val.xlsx")
+    test_meta_path = os.path.join(meta_dir, "test.xlsx")
+
     return \
         Evaluator(
             interval=0,
@@ -335,7 +343,9 @@ def build_test_evaluators(args, base_dir, device):
             results_file=val_report,
             num_classes=args.num_classes,
             device=device,
-            desc="Validation"
+            desc="Validation",
+            meta_file=val_meta_path,
+            duplicate=args.duplicate
         ), \
         Evaluator(
             interval=0,
@@ -345,5 +355,7 @@ def build_test_evaluators(args, base_dir, device):
             results_file=test_report,
             num_classes=args.num_classes,
             device=device,
-            desc="Testing"
+            desc="Testing",
+            meta_file=test_meta_path,
+            duplicate=args.duplicate
         )
