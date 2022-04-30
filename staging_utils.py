@@ -328,7 +328,7 @@ def build_test_evaluators(args, base_dir, device):
 
 
     meta_dir = args.meta_path_dir
-    if (not os.path.exits(meta_dir)):
+    if (not os.path.exists(meta_dir)):
         raise ValueError(f"No Meta Directory Detected")
 
     val_meta_path = os.path.join(meta_dir, "val.xlsx")

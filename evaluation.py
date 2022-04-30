@@ -31,7 +31,8 @@ from aux import (
     compute_accuracy,
     compute_pixels,
     compute_thickness,
-    getGlaucomaLabel
+    getGlaucomaLabel,
+    predict
 )
 
 ################################################################################

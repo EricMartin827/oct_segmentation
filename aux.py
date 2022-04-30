@@ -4,6 +4,7 @@
 
 import torch
 import numpy as np
+import pandas as pd
 import torch.nn.functional as F
 
 from sklearn.metrics import (
@@ -145,7 +146,7 @@ def compute_thickness(mask, resolution=1):
     if isinstance(mask, list): # if a list 
         B = len(mask)
         C = mask[0].shape[0]
-        thickness = torch.zeros((B, len(C)))
+        thickness = torch.zeros((B, C))
         # loop through each image
         for b in range(B):
             # sum thickness through the horizontal axis for each class
@@ -153,7 +154,7 @@ def compute_thickness(mask, resolution=1):
                 thickness[b, int(c)] = torch.mean(torch.sum(mask[b][c,:,:]==1, dim=1).float()) 
     else: # if a tensor
         B,C = mask.shape[0], mask.shape[1]
-        thickness = torch.zeros((B, len(C)))
+        thickness = torch.zeros((B, C))
         # loop through each image
         for b in range(B):
             # sum thickness through the horizontal axis for each class
@@ -176,7 +177,7 @@ def compute_pixels(mask, metric="proportion"):
     if isinstance(mask, list): # if a list 
         B = len(mask)
         C,H,W = mask[0].shape
-        pixels = torch.zeros((B, len(C)))
+        pixels = torch.zeros((B, C))
         # loop through each image
         for b in range(B):
             # count number of pixels in the whole image for that class
@@ -185,7 +186,7 @@ def compute_pixels(mask, metric="proportion"):
     else: # if a tensor
         B = mask.shape[0]
         C,H,W = mask[0,:,:,:].shape
-        pixels = torch.zeros((B, len(C)))
+        pixels = torch.zeros((B, C))
         # loop through each image
         for b in range(B):
             # sum thickness through the horizontal axis for each class
@@ -195,7 +196,16 @@ def compute_pixels(mask, metric="proportion"):
     
     
 # NEW 4/30/2022
-def getGlaucomaLabel(path):
+def getGlaucomaLabel(path, duplicate=0):
     names = pd.read_excel(path)
-    glaucoma = (names.iloc[:,0].str.contains("ONC") + names.iloc[:,0].str.contains("OHT")).astype(int)
+    idx = names.iloc[:,0].str.contains("mask")
+    names = names.loc[idx, :]
+    glaucoma = np.asarray((names.iloc[:,0].str.contains("ONC") + names.iloc[:,0].str.contains("OHT"))).astype(int)
+    if duplicate > 0:
+        n = glaucoma.shape[0]
+        glaucoma_new = []
+        for i in range(n):
+    	    for j in range(duplicate):
+                glaucoma_new.append(glaucoma[i])
+        return np.asarray(glaucoma_new)	
     return glaucoma 
