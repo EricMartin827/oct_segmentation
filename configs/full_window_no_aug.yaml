@@ -3,6 +3,7 @@ Misc:
   wandb_project_name: "Full Window - No Augmentation"
 
 Inputs:
+ meta_path_dir: ./data/meta
  data_path_dir: ./data/full_window  #Data location
  model_dir: ./models                #Data storage
 

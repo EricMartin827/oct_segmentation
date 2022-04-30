@@ -52,7 +52,8 @@ def evaluate(model,
              export_path=None,
              num_classes=3,
              device='cuda',
-             desc="No Description"):
+             desc="No Description",
+             meta_file=None):
 
     '''
     Compute prediction and loss on test data (also used for validation)
@@ -138,7 +139,7 @@ def evaluate(model,
         writer_xlsx = pd.ExcelWriter(export_path, engine='xlsxwriter')
         C = truth_1hot.shape[1]
         for c in range(C):
-            
+
             result = pd.DataFrame({
 
                 'dice':     dice_metrics[:, c].cpu(),
@@ -207,7 +208,8 @@ class Evaluator:
                  results_file=None,
                  num_classes=3,
                  device='cuda',
-                 desc="No Description"
+                 desc="No Description",
+                 meta_file=None
                  ):
 
         self.interval = interval
@@ -218,6 +220,7 @@ class Evaluator:
         self.num_classes = num_classes
         self.device = device
         self.desc = desc
+        self.meta_file = meta_file
 
     def __call__(self, model, loader) -> float:
 
@@ -230,7 +233,8 @@ class Evaluator:
             export_path=self.results_file,
             num_classes=self.num_classes,
             device=self.device,
-            desc=self.desc
+            desc=self.desc,
+            meta_file=self.meta_file
         )
 
     def should_run_at(self, epoch) -> bool:
