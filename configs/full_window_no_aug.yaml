@@ -46,7 +46,7 @@ Mode:
 Train:
  learning_rate: 0.001 #0.1 #original is 0.1
  reg: 0.00001 #0.001 # orig is 0.0001
- epochs: 200
+ epochs: 100
  min_learning_rate: 0.000001
  patience: 20
 
@@ -56,27 +56,14 @@ Loss:
  loss_to_onehot: True
  loss_softmax: True
 
-Evaluate:
-  report_base_dir: "reports"
-
 ### Can Generate A Report on Validation Data
 TrainEvaluate:
- train_val_interval: 20
- train_k_stochastic_passes: 1
- train_preds_to_visualize: 0
- train_uncertainty: False
- train_report_file: "reports/training_validation_report.xlsx"
- loss_curve_image_file: "reports/training_loss_curves.png"
- visualize_loss_curve: False
+ train_val_interval: 10
+ train_record_full_metrics: rue
 
-ValEvaluate:
- val_k_stochastic_passes: 1
- val_preds_to_visualize: 0
- val_uncertainty: False
- val_report_file: "val_resport.xlsx"
-
-TestEvaluate:
- test_k_stochastic_passes: 1
- test_preds_to_visualize: 0
- test_uncertainty: False
- test_report_file: "test_resport.xlsx"
+Evaluate:
+ k_stochastic_passes: 1
+ preds_to_visualize: 10
+ uncertainty: True
+ val_report_file: "validation_report.xlsx"
+ test_report_file: "test_report.xlsx"

@@ -22,12 +22,10 @@ from aux import (
 ################################ Main Functions ################################
 ################################################################################
 
-def visualize(image, mask, output, uncertainty=None, index=0):
+def visualize(image, mask, output, uncertainty=None,
+              index=0, filepath=None):
 
-    if uncertainty is not None:
-        n_images = 4
-    else:
-        n_images = 3
+    n_images = (3, 4)[uncertainty is not None]
     _, axes = plt.subplots(nrows=1, ncols=n_images, figsize=(8,20))
 
     [axes[i].axis("off") for i in range(n_images)]
@@ -45,8 +43,11 @@ def visualize(image, mask, output, uncertainty=None, index=0):
         axes[3].set_title('Uncertainty ' + str(index))
 
     plt.subplots_adjust(wspace=.1, hspace=.05)
-    plt.show()
 
+    if (filepath):
+        plt.savefig(filepath)
+    else:
+        plt.show()
 
 def visualize_group(model, loader, K=1, uncertainty=True, device="cuda"):
 
