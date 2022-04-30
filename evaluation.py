@@ -56,8 +56,8 @@ def evaluate(model,
              num_classes=3,
              device='cuda',
              desc="No Description",
-             meta_file=None):
-
+             meta_file=None,
+             duplicates=0):
 
     '''
     Compute prediction and loss on test data (also used for validation)
@@ -165,7 +165,7 @@ def evaluate(model,
                 'pixels_true': pixels_true[:, c].cpu()
 
             }).astype("float")
-            test_glaucoma = getGlaucomaLabel(meta_file) 
+            test_glaucoma = getGlaucomaLabel(meta_file, duplicate) 
             result['glaucoma'] = test_glaucoma
             result.loc['Mean'] = result.mean(axis=0)
             result.loc['Std'] = result.std(axis=0)

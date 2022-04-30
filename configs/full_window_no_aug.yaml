@@ -6,6 +6,7 @@ Inputs:
  meta_path_dir: ./data/meta
  data_path_dir: ./data/full_window  #Data location
  model_dir: ./models                #Data storage
+ duplicates: 0
 
 Augmentations:
  augment_training_data: False
@@ -59,8 +60,9 @@ Loss:
 
 ### Can Generate A Report on Validation Data
 TrainEvaluate:
- train_val_interval: 2
- train_record_full_metrics: rue
+ train_val_interval: 10
+ train_record_full_metrics: True
+
 
 Evaluate:
  k_stochastic_passes: 1
