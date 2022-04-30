@@ -1,6 +1,6 @@
 Misc:
   use_cpu: False
-  wandb_project_name: "Full Window - No Augmentation"
+  wandb_project_name: "BasicUnet_No_Augmentation"
 
 Inputs:
  meta_path_dir: ./data/meta
@@ -22,7 +22,7 @@ DataLoading:
  num_workers: 0 ### How Many Internal Threads For Loading Data (should be 0 if pin memory True)
  num_classes: 3 ### Number Of Classification in Labels
 
- num_train_samples: 32 ### -1 -> All Samples
+ num_train_samples: -1  ### -1 -> All Samples
  num_val_samples: -1   ### -1 -> All Samples
  num_test_samples: -1  ### -1 -> All Samples
 
@@ -48,7 +48,7 @@ Mode:
 Train:
  learning_rate: 0.001 #0.1 #original is 0.1
  reg: 0.00001 #0.001 # orig is 0.0001
- epochs: 3
+ epochs: 100
  min_learning_rate: 0.000001
  patience: 20
 
@@ -60,7 +60,7 @@ Loss:
 
 ### Can Generate A Report on Validation Data
 TrainEvaluate:
- train_val_interval: 10
+ train_val_interval: 1 
  train_record_full_metrics: True
 
 

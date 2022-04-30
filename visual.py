@@ -26,7 +26,7 @@ def visualize(image, mask, output, uncertainty=None,
               index=0, filepath=None):
 
     n_images = (3, 4)[uncertainty is not None]
-    _, axes = plt.subplots(nrows=1, ncols=n_images, figsize=(8,20))
+    _, axes = plt.subplots(nrows=1, ncols=n_images, figsize=(12, 5))
 
     [axes[i].axis("off") for i in range(n_images)]
     axes[0].imshow(image, cmap='gray')

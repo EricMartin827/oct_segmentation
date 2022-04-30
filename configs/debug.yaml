@@ -1,10 +1,12 @@
 Misc:
   use_cpu: False
-  wandb_project_name: "Eric Debugging"
+  wandb_project_name: "Debug"
 
 Inputs:
+ meta_path_dir: ./data/meta
  data_path_dir: ./data/full_window  #Data location
  model_dir: ./models                #Data storage
+ duplicate: 0
 
 Augmentations:
  augment_training_data: False
@@ -16,13 +18,13 @@ Augmentations:
 
 DataLoading:
 
- batch_size: 1
+ batch_size: 16
  num_workers: 0 ### How Many Internal Threads For Loading Data (should be 0 if pin memory True)
  num_classes: 3 ### Number Of Classification in Labels
 
- num_train_samples: 10 ### -1 -> All Samples
- num_val_samples: 10   ### -1 -> All Samples
- num_test_samples: 10  ### -1 -> All Samples
+ num_train_samples: 16  ### -1 -> All Samples
+ num_val_samples: -1   ### -1 -> All Samples
+ num_test_samples: -1  ### -1 -> All Samples
 
  pin_train_data: True  ### Enable Faster Transfer to GPU
  pin_val_data: True
@@ -41,12 +43,12 @@ Model:
 Mode:
  train: True
  path_to_weights: models/test_load.pth
- new_weights_file: optimal_weights.pth
+ new_weights_file: best_metric_model_weights.pth
 
 Train:
  learning_rate: 0.001 #0.1 #original is 0.1
  reg: 0.00001 #0.001 # orig is 0.0001
- epochs: 5
+ epochs: 1
  min_learning_rate: 0.000001
  patience: 20
 
@@ -56,11 +58,11 @@ Loss:
  loss_to_onehot: True
  loss_softmax: True
 
-
 ### Can Generate A Report on Validation Data
 TrainEvaluate:
- train_val_interval: 1
+ train_val_interval: 1 
  train_record_full_metrics: True
+
 
 Evaluate:
  k_stochastic_passes: 1
