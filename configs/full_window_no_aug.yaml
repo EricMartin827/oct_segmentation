@@ -56,11 +56,10 @@ Loss:
  loss_to_onehot: True
  loss_softmax: True
 
-
 ### Can Generate A Report on Validation Data
 TrainEvaluate:
- train_val_interval: 5
- train_record_full_metrics: True
+ train_val_interval: 10
+ train_record_full_metrics: rue
 
 Evaluate:
  k_stochastic_passes: 1

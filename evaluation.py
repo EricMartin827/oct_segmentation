@@ -60,7 +60,7 @@ def evaluate(model,
     export_path: must be a .xlsx file
     '''
 
-    print("f====Evaluation {desc} ====")
+    print(f"==== Evaluation {desc} ====")
 
     if K > 1: print("Running K stochastic forward passes prediction...")
     else:     print("Running standard pointwise prediction...")
