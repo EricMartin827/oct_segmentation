@@ -136,9 +136,9 @@ def evaluate(model,
     if export_path:
 
         writer_xlsx = pd.ExcelWriter(export_path, engine='xlsxwriter')
-        C = label.shape[1]
+        C = truth_1hot.shape[1]
         for c in range(C):
-
+            
             result = pd.DataFrame({
 
                 'dice':     dice_metrics[:, c].cpu(),
@@ -151,6 +151,7 @@ def evaluate(model,
             result.loc['Mean'] = result.mean(axis=0)
             result.loc['Std'] = result.std(axis=0)
             result.index.names = ['patch']
+            print("sheet size", result.shape)
             result.to_excel(writer_xlsx, sheet_name='class'+str(c))
 
         writer_xlsx.save()
