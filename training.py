@@ -2,13 +2,8 @@
 ################################ Python Imports ################################
 ################################################################################
 
-import pandas as pd
-
 import torch
-import torchvision
 from torch.utils.tensorboard import SummaryWriter
-
-import wandb
 
 ################################################################################
 ################################# Local Imports ################################
@@ -29,20 +24,13 @@ def train(model,
           monitor,
           max_epochs,
           evaluator,
-          best_model_weight_file,
+          weight_file,
           device
           ):
 
     '''
     start a typical PyTorch training
     '''
-
-    ### Do This First Before You Start Optimizing Anything
-    try:
-        with open(best_model_weight_file, 'w') as f:
-            print(f"{best_model_weight_file} Can Be Created")
-    except FileNotFoundError:
-        raise ValueError(f"Cannot Create {best_model_weight_file}")
 
     ### Calulate The Number Of Batches Per Epoch (For tracking progress)
 
@@ -183,12 +171,11 @@ def train(model,
                 print(f"Old Score {best_metric} @ Epoch {best_metric_epoch}")
 
                 best_metric, best_metric_epoch = metric, epoch
-                torch.save(model.state_dict(), best_model_weight_file)
+                torch.save(model.state_dict(), weight_file)
 
-                print(f"Weight File Saved @ {best_model_weight_file}")
+                print(f"Weight File Saved @ {weight_file}")
                 writer.add_scalar("val_mean_dice", metric, epoch)
                 print("-" * 20)
-
 
     print("-" * 10)
     print("--Traning Complete--")
@@ -196,3 +183,5 @@ def train(model,
 
     print(f"Best Class 2 Dice Score {best_metric:.4f} at epoch: {best_metric_epoch}")
     writer.close()
+
+    return weight_file

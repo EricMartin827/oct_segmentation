@@ -2,6 +2,7 @@
 ################################ Python Imports ################################
 ################################################################################
 
+import os
 import sys
 import cv2
 import numpy as np
@@ -55,6 +56,18 @@ def describe_model(model, loader):
     inputs, _ = next(iterator)
     summary(model, input_size=inputs.shape)
 
+
+def generate_final_report(
+        args, model, optimal_weight_file,
+        val_loader, test_loader, device):
+
+    model.load_state_dict(torch.load(optimal_weight_file))
+    model_dir, _ = os.path.split(optimal_weight_file)
+    val_eval, test_eval = build_test_evaluators(args, model_dir, device)
+    val_eval(model, val_loader)
+    test_eval(model, test_loader)
+
+
 def main():
 
     args = parse_user_inputs()
@@ -82,30 +95,35 @@ def main():
         loss_function = build_loss_function(args, config)
         optimizer = build_optimizer(args, model, config)
         scheduler = build_scheduler(args, optimizer)
-        
-        evaluator = build_train_evaluator(args, device)
+
+        evaluator = build_train_evaluator(args, monitor, device)
 
         describe_model(model, train_loader)
 
-        train(
-            model=model,
-            train_set_size=train_set_size,
-            train_loader=train_loader,
-            val_set_size=val_set_size,
-            val_loader=val_loader,
-            loss_function=loss_function,
-            optimizer=optimizer,
-            scheduler=scheduler,
-            monitor=monitor,
-            max_epochs=config.epochs,
-            evaluator=evaluator,
-            best_model_weight_file=new_weight_file,
-            device=device
+        optimal_weights = \
+            train(
+                model=model,
+                train_set_size=train_set_size,
+                train_loader=train_loader,
+                val_set_size=val_set_size,
+                val_loader=val_loader,
+                loss_function=loss_function,
+                optimizer=optimizer,
+                scheduler=scheduler,
+                monitor=monitor,
+                max_epochs=config.epochs,
+                evaluator=evaluator,
+                weight_file=new_weight_file,
+                device=device
             )
+
+        generate_final_report(
+            args, model, optimal_weights,
+            val_loader, test_loader, device)
 
     else:
 
-        print(f"Running In Evaluation Mode.")
+        print(f"Running In Evaluation Mode Only.")
 
         model = build_model(args, device=device)
 

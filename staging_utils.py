@@ -38,7 +38,8 @@ from dataset import (
 )
 
 from evaluation import (
-    Evaluator
+    Evaluator,
+    TrainEvaluator
 )
 
 
@@ -297,30 +298,17 @@ def build_scheduler(args, optimizer):
         min_lr=args.min_learning_rate)
 
 
-def build_train_evaluator(args, device):
+def build_train_evaluator(args, monitor, device):
 
-    base_dir, report_file = args.report_base_dir, args.train_report_file
-    if base_dir and report_file:
-        if not os.path.exists(base_dir):
-            os.mkdir(base_dir)
-            report_file = os.path.join(base_dir, report_file)
-    else:
-        report_file = None
-
-    return Evaluator(
+    return TrainEvaluator(
+        monitor,
         interval=args.train_val_interval,
-        k_stochastic_passes=args.train_k_stochastic_passes,
-        num_to_visualize=args.train_preds_to_visualize,
-        uncertainty=args.train_uncertainty,
-        results_file=report_file,
         num_classes=args.num_classes,
         device=device
     )
 
+def build_test_evaluators(args, base_dir, device):
 
-def build_test_evaluators(args, device):
-
-    base_dir = args.report_base_dir
     val_report, test_report = args.val_report_file, args.test_report_file
 
     if not base_dir:
@@ -341,19 +329,21 @@ def build_test_evaluators(args, device):
     return \
         Evaluator(
             interval=0,
-            k_stochastic_passes=args.val_k_stochastic_passes,
-            num_to_visualize=args.val_preds_to_visualize,
-            uncertainty=args.val_uncertainty,
+            k_stochastic_passes=args.k_stochastic_passes,
+            num_to_visualize=args.preds_to_visualize,
+            uncertainty=args.uncertainty,
             results_file=val_report,
             num_classes=args.num_classes,
-            device=device
+            device=device,
+            desc="Validation"
         ), \
         Evaluator(
             interval=0,
-            k_stochastic_passes=args.test_k_stochastic_passes,
-            num_to_visualize=args.test_preds_to_visualize,
-            uncertainty=args.test_uncertainty,
+            k_stochastic_passes=args.k_stochastic_passes,
+            num_to_visualize=args.preds_to_visualize,
+            uncertainty=args.uncertainty,
             results_file=test_report,
             num_classes=args.num_classes,
-            device=device
+            device=device,
+            desc="Testing"
         )
