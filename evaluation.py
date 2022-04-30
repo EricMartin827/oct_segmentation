@@ -77,7 +77,7 @@ def evaluate(model,
         [AsDiscrete(argmax=False, to_onehot=num_classes)])
 
     # hold file to write to csv
-    dice_metrics, auc_metrics, acc_metrics, jac_metrics = [], [], [], []
+    dice_metrics, auc_metrics, acc_metrics, jac_metrics, uncertainty_avg = [], [], [], [], []
     thickness_pred, thickness_true, pixels_pred, pixels_true = [], [], [], []
 
     if export_path is None: full_metrics = False
@@ -129,6 +129,8 @@ def evaluate(model,
                 thickness_true.append(compute_thickness(truth_1hot))
                 pixels_pred.append(compute_pixels(preds_1hot))
                 pixels_true.append(compute_pixels(truth_1hot))
+                uncertainty_avg.append(torch.mean(output_uncertainty, dim=(1,2))) # (B,H, W)
+                
 
 
     ### Collate the gathered metrics for recording summary statistics for CSV
@@ -142,6 +144,7 @@ def evaluate(model,
         thickness_true = torch.cat(thickness_true, dim=0)
         pixels_pred = torch.cat(pixels_pred, dim=0)
         pixels_true = torch.cat(pixels_true, dim=0)
+        uncertainty_avg = torch.cat(uncertainty_avg, dim=0)
 
     avg_dice = torch.mean(dice_metrics, dim=0) ### Along Sample Dimension
     display_dice_scores(avg_dice)
@@ -162,7 +165,8 @@ def evaluate(model,
                 'thickness_pred': thickness_pred[:, c].cpu(),
                 'thickness_true': thickness_true[:, c].cpu(),
                 'pixels_pred': pixels_pred[:, c].cpu(),
-                'pixels_true': pixels_true[:, c].cpu()
+                'pixels_true': pixels_true[:, c].cpu(),
+                'uncertainty': uncertainty_avg.cpu()
 
             }).astype("float")
             test_glaucoma = getGlaucomaLabel(meta_file, duplicate)

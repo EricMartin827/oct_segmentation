@@ -37,7 +37,7 @@ DataLoading:
 Model:
  model: unet
  channels: [16, 32, 48, 96, 192]
- strides: [2, 2, 2, 2] #1-8 for the first layers and 1-4 to last half
+ strides: [2, 2, 2, 1] #1-8 for the first layers and 1-4 to last half
  dropout: 0.2
 
 Mode:
@@ -60,7 +60,7 @@ Loss:
 
 ### Can Generate A Report on Validation Data
 TrainEvaluate:
- train_val_interval: 1 
+ train_val_interval: 10 
  train_record_full_metrics: True
 
 
