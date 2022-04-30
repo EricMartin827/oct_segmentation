@@ -29,7 +29,9 @@ from aux import (
     compute_auc,
     compute_jaccard,
     compute_accuracy,
-    predict
+    compute_pixels,
+    compute_thickness,
+    getGlaucomaLabel
 )
 
 ################################################################################
@@ -55,6 +57,7 @@ def evaluate(model,
              desc="No Description",
              meta_file=None):
 
+
     '''
     Compute prediction and loss on test data (also used for validation)
 
@@ -74,6 +77,7 @@ def evaluate(model,
 
     # hold file to write to csv
     dice_metrics, auc_metrics, acc_metrics, jac_metrics = [], [], [], []
+    thickness_pred, thickness_true, pixels_pred, pixels_true = [], [], [], []
 
     if export_path is None: full_metrics = False
     else: full_metrics = True
@@ -120,6 +124,10 @@ def evaluate(model,
                 auc_metrics.append(compute_auc(preds_1hot, truth_1hot))
                 acc_metrics.append(compute_accuracy(preds_1hot, truth_1hot))
                 jac_metrics.append(compute_jaccard(preds_1hot, truth_1hot))
+                thickness_pred.append(compute_thickness(preds_1hot))                   
+                thickness_true.append(compute_thickness(truth_1hot))
+                pixels_pred.append(compute_pixels(preds_1hot))
+                pixels_true.append(compute_pixels(truth_1hot))
 
 
     ### Collate the gathered metrics for recording summary statistics for CSV
@@ -129,6 +137,10 @@ def evaluate(model,
         auc_metrics = torch.cat(auc_metrics, dim=0)
         acc_metrics = torch.cat(acc_metrics, dim=0)
         jac_metrics = torch.cat(jac_metrics, dim=0)
+        thickness_pred = torch.cat(thickness_pred, dim=0)
+        thickness_true = torch.cat(thickness_true, dim=0)
+        pixels_pred = torch.cat(pixels_pred, dim=0)
+        pixels_true = torch.cat(pixels_true, dim=0)        
 
     avg_dice = torch.mean(dice_metrics, dim=0) ### Along Sample Dimension
     display_dice_scores(avg_dice)
@@ -145,10 +157,15 @@ def evaluate(model,
                 'dice':     dice_metrics[:, c].cpu(),
                 'auc':      auc_metrics[:, c].cpu(),
                 'accuracy': acc_metrics[:, c].cpu(),
-                'jaccard':  jac_metrics[:, c].cpu()
+                'jaccard':  jac_metrics[:, c].cpu(),
+                'thickness_pred': thickness_pred[:, c].cpu(),
+                'thickness_true': thickness_true[:, c].cpu(),
+                'pixels_pred': pixels_pred[:, c].cpu(),
+                'pixels_true': pixels_true[:, c].cpu()
 
             }).astype("float")
-
+            test_glaucoma = getGlaucomaLabel(meta_file) 
+            result['glaucoma'] = test_glaucoma
             result.loc['Mean'] = result.mean(axis=0)
             result.loc['Std'] = result.std(axis=0)
             result.index.names = ['patch']

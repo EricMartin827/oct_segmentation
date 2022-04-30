@@ -128,3 +128,74 @@ def predict(model, image, K=1):
     # TODO: alternative way to compute uncertainty is to use
     # variance of the K passes
     return output_probs, output_uncertainty
+    
+    
+# NEW 4/27/2022
+def compute_thickness(mask, resolution=1): 
+    '''
+    Computes the vertical thickness of each image given a batch of masks
+    for each class
+
+    mask: is a tensor of dimension (B,C,H,W) where each entry
+    OR a list of images
+    is the categorical classification with discrete values [0,1,...C-1]
+
+    thickness: a tensor of dimension (B, C) 
+    '''
+    if isinstance(mask, list): # if a list 
+        B = len(mask)
+        C = mask[0].shape[0]
+        thickness = torch.zeros((B, len(C)))
+        # loop through each image
+        for b in range(B):
+            # sum thickness through the horizontal axis for each class
+            for c in range(C):
+                thickness[b, int(c)] = torch.mean(torch.sum(mask[b][c,:,:]==1, dim=1).float()) 
+    else: # if a tensor
+        B,C = mask.shape[0], mask.shape[1]
+        thickness = torch.zeros((B, len(C)))
+        # loop through each image
+        for b in range(B):
+            # sum thickness through the horizontal axis for each class
+            for c in range(C):
+                thickness[b, int(c)] = torch.mean(torch.sum(mask[b,c,:,:]==1, dim=1).float()) 
+    return thickness * resolution 
+    
+    
+# NEW 4/27/2022
+def compute_pixels(mask, metric="proportion"): 
+    '''
+    Computes the number of pixels of each image given a batch of masks
+    for each class
+
+    mask: is a tensor of dimension (B,C,H,W) where each entry OR a list of images
+    values are categorical classification with discrete values [0,1,...C-1]
+    metric="proportion" to compute percentage of pixels; else the count 
+    pixels: a tensor of dimension (B, C) 
+    '''
+    if isinstance(mask, list): # if a list 
+        B = len(mask)
+        C,H,W = mask[0].shape
+        pixels = torch.zeros((B, len(C)))
+        # loop through each image
+        for b in range(B):
+            # count number of pixels in the whole image for that class
+            for c in range(C):
+                pixels[b, int(c)] = torch.sum(mask[b][c,:,:]==1).float() 
+    else: # if a tensor
+        B = mask.shape[0]
+        C,H,W = mask[0,:,:,:].shape
+        pixels = torch.zeros((B, len(C)))
+        # loop through each image
+        for b in range(B):
+            # sum thickness through the horizontal axis for each class
+            for c in range(C):
+                pixels[b, int(c)] = torch.sum(mask[b,c,:,:]==1).float()
+    return pixels / (H*W)
+    
+    
+# NEW 4/30/2022
+def getGlaucomaLabel(path):
+    names = pd.read_excel(path)
+    glaucoma = (names.iloc[:,0].str.contains("ONC") + names.iloc[:,0].str.contains("OHT")).astype(int)
+    return glaucoma 
