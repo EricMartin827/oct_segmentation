@@ -6,7 +6,7 @@ Inputs:
  meta_path_dir: ./data/meta
  data_path_dir: ./data/full_window  #Data location
  model_dir: ./models                #Data storage
- duplicates: 0
+ duplicate: 0
 
 Augmentations:
  augment_training_data: False

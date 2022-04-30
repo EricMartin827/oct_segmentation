@@ -57,7 +57,7 @@ def evaluate(model,
              device='cuda',
              desc="No Description",
              meta_file=None,
-             duplicates=0):
+             duplicate=0):
 
     '''
     Compute prediction and loss on test data (also used for validation)
@@ -125,7 +125,7 @@ def evaluate(model,
                 auc_metrics.append(compute_auc(preds_1hot, truth_1hot))
                 acc_metrics.append(compute_accuracy(preds_1hot, truth_1hot))
                 jac_metrics.append(compute_jaccard(preds_1hot, truth_1hot))
-                thickness_pred.append(compute_thickness(preds_1hot))                   
+                thickness_pred.append(compute_thickness(preds_1hot))
                 thickness_true.append(compute_thickness(truth_1hot))
                 pixels_pred.append(compute_pixels(preds_1hot))
                 pixels_true.append(compute_pixels(truth_1hot))
@@ -141,7 +141,7 @@ def evaluate(model,
         thickness_pred = torch.cat(thickness_pred, dim=0)
         thickness_true = torch.cat(thickness_true, dim=0)
         pixels_pred = torch.cat(pixels_pred, dim=0)
-        pixels_true = torch.cat(pixels_true, dim=0)        
+        pixels_true = torch.cat(pixels_true, dim=0)
 
     avg_dice = torch.mean(dice_metrics, dim=0) ### Along Sample Dimension
     display_dice_scores(avg_dice)
@@ -165,7 +165,7 @@ def evaluate(model,
                 'pixels_true': pixels_true[:, c].cpu()
 
             }).astype("float")
-            test_glaucoma = getGlaucomaLabel(meta_file, duplicate) 
+            test_glaucoma = getGlaucomaLabel(meta_file, duplicate)
             result['glaucoma'] = test_glaucoma
             result.loc['Mean'] = result.mean(axis=0)
             result.loc['Std'] = result.std(axis=0)
@@ -227,7 +227,8 @@ class Evaluator:
                  num_classes=3,
                  device='cuda',
                  desc="No Description",
-                 meta_file=None
+                 meta_file=None,
+                 duplicate=0
                  ):
 
         self.interval = interval
@@ -239,6 +240,7 @@ class Evaluator:
         self.device = device
         self.desc = desc
         self.meta_file = meta_file
+        self.duplicate = duplicate
 
     def __call__(self, model, loader) -> float:
 
@@ -252,7 +254,8 @@ class Evaluator:
             num_classes=self.num_classes,
             device=self.device,
             desc=self.desc,
-            meta_file=self.meta_file
+            meta_file=self.meta_file,
+            duplicate=self.duplicate
         )
 
     def should_run_at(self, epoch) -> bool:
