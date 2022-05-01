@@ -9,7 +9,7 @@ Inputs:
  duplicate: 0
 
 Augmentations:
- augment_training_data: False
+ augment_training_data: True
  aug_rotation: 30
  aug_rotation_prob: 0.5
  aug_affine_x_shear: 15
