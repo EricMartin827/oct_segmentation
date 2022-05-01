@@ -76,6 +76,7 @@ def build_wandb_monitor(args):
         entity="oct_segmentation_uncertainty", ### Group Name
 
         config = {
+
             "learning_rate": args.learning_rate,
             "epochs": args.epochs,
             "batch_size": args.batch_size,
@@ -84,7 +85,14 @@ def build_wandb_monitor(args):
             "optimizer": "adam",
             "channels": args.channels,
             "strides": args.strides,
-            "loss_include_background": args.loss_include_background
+            "loss_include_background": args.loss_include_background,
+
+            "aug_rotation_prob": args.aug_rotation_prob,
+            "aug_rotation": args.aug_rotation,
+
+            "aug_affine_prob":    args.aug_affine_prob,
+            "aug_affine_x_shear": args.aug_affine_x_shear,
+            "aug_affine_y_shear": args.aug_affine_y_shear,
         }
     )
 
