@@ -31,6 +31,7 @@ from aux import (
     compute_accuracy,
     compute_pixels,
     compute_thickness,
+    compute_uncertainty,
     getGlaucomaLabel,
     predict
 )
@@ -77,8 +78,9 @@ def evaluate(model,
         [AsDiscrete(argmax=False, to_onehot=num_classes)])
 
     # hold file to write to csv
-    dice_metrics, auc_metrics, acc_metrics, jac_metrics, uncertainty_avg = [], [], [], [], []
+    dice_metrics, auc_metrics, acc_metrics, jac_metrics = [], [], [], []
     thickness_pred, thickness_true, pixels_pred, pixels_true = [], [], [], []
+    uncertainty_y, uncertainty_pred, uncertainty_avg = [], [], []
 
     if export_path is None: full_metrics = False
     else: full_metrics = True
@@ -129,8 +131,9 @@ def evaluate(model,
                 thickness_true.append(compute_thickness(truth_1hot))
                 pixels_pred.append(compute_pixels(preds_1hot))
                 pixels_true.append(compute_pixels(truth_1hot))
+                uncertainty_y.append(compute_uncertainty(output_uncertainty, truth_1hot))
+                uncertainty_pred.append(compute_uncertainty(output_uncertainty, preds_1hot))
                 uncertainty_avg.append(torch.mean(output_uncertainty, dim=(1,2))) # (B,H, W)
-                
 
 
     ### Collate the gathered metrics for recording summary statistics for CSV
@@ -144,6 +147,8 @@ def evaluate(model,
         thickness_true = torch.cat(thickness_true, dim=0)
         pixels_pred = torch.cat(pixels_pred, dim=0)
         pixels_true = torch.cat(pixels_true, dim=0)
+        uncertainty_y = torch.cat(uncertainty_y, dim=0)
+        uncertainty_pred = torch.cat(uncertainty_pred, dim=0)
         uncertainty_avg = torch.cat(uncertainty_avg, dim=0)
 
     avg_dice = torch.mean(dice_metrics, dim=0) ### Along Sample Dimension
@@ -166,7 +171,9 @@ def evaluate(model,
                 'thickness_true': thickness_true[:, c].cpu(),
                 'pixels_pred': pixels_pred[:, c].cpu(),
                 'pixels_true': pixels_true[:, c].cpu(),
-                'uncertainty': uncertainty_avg.cpu()
+                'uncertainty_classbypred': uncertainty_y.cpu(),
+                'uncertainty_classbytrue': uncertainty_pred.cpu(),
+                'uncertainty_allclasses': uncertainty_avg.cpu(),
 
             }).astype("float")
             test_glaucoma = getGlaucomaLabel(meta_file, duplicate)
