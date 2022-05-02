@@ -1,0 +1,72 @@
+Misc:
+  use_cpu: False
+  wandb_project_name: "BasicUnet_No_Augmentation_SlidingWindow"
+
+Inputs:
+ meta_path_dir: ./data/meta
+ data_path_dir: ./data/sliding_window             # Data location
+ model_dir: ./models/BasicUnet_SlidingWindow_5Layer # Data storage
+ duplicate: 0
+
+Augmentations:
+ augment_training_data: False
+ aug_rotation: 30
+ aug_rotation_prob: 0.5
+ aug_affine_x_shear: 15
+ aug_affine_y_shear: 15
+ aug_affine_prob: 0.5
+
+DataLoading:
+
+ batch_size: 16
+ num_workers: 0 ### How Many Internal Threads For Loading Data (should be 0 if pin memory True)
+ num_classes: 3 ### Number Of Classification in Labels
+
+ num_train_samples: -1  ### -1 -> All Samples
+ num_val_samples: -1   ### -1 -> All Samples
+ num_test_samples: -1  ### -1 -> All Samples
+
+ pin_train_data: True  ### Enable Faster Transfer to GPU
+ pin_val_data: True
+ pin_test_data: True
+
+ shuffle_train_data: True ### Shuffle The Data From Loader
+ shuffle_val_data: False
+ shuffle_test_data: False
+
+Model:
+ model: unet
+ channels: [16, 32, 48, 96, 192]
+ strides: [2, 2, 2, 1] #1-8 for the first layers and 1-4 to last half
+ dropout: 0.2
+
+Mode:
+ train: True
+ path_to_weights: models/test_load.pth
+ new_weights_file: best_metric_model_weights.pth
+
+Train:
+ learning_rate: 0.001 #0.1 #original is 0.1
+ reg: 0.00001 #0.001 # orig is 0.0001
+ epochs: 100
+ min_learning_rate: 0.000001
+ patience: 20
+
+Loss:
+ loss_function: DiceFocalLoss
+ loss_include_background: True
+ loss_to_onehot: True
+ loss_softmax: True
+
+### Can Generate A Report on Validation Data
+TrainEvaluate:
+ train_val_interval: 10 
+ train_record_full_metrics: True
+
+
+Evaluate:
+ k_stochastic_passes: 1
+ preds_to_visualize: 10
+ uncertainty: True
+ val_report_file: "validation_report.xlsx"
+ test_report_file: "test_report.xlsx"
