@@ -1,11 +1,11 @@
 Misc:
   use_cpu: False
-  wandb_project_name: "BasicUnet_NoAug_6layers"
+  wandb_project_name: "BasicUnet_NoAug_4layers"
 
 Inputs:
  meta_path_dir: ./data/meta
  data_path_dir: ./data/full_window  #Data location
- model_dir: ./models/BasicUnet_NoAug_6layers  #Data storage
+ model_dir: ./models/BasicUnet_NoAug_4layer  #Data storage
  duplicate: 0
 
 Augmentations:
@@ -36,8 +36,8 @@ DataLoading:
 
 Model:
  model: unet
- channels: [16, 32, 48, 96, 192, 384]
- strides: [2, 2, 2, 1, 1] #1-8 for the first layers and 1-4 to last half
+ channels: [16, 32, 48, 96]
+ strides: [2, 2, 1] #1-8 for the first layers and 1-4 to last half
  dropout: 0.2
 
 Mode:

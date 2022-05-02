@@ -227,7 +227,7 @@ def create_path_to_new_weight_file(args):
     model_dir = os.path.join(args.model_dir, f"Model_{timestamp}")
 
     print(f"Creating {model_dir} For Storing Model Weights")
-    os.mkdir(model_dir)
+    os.makedirs(model_dir)
 
     weight_file = os.path.join(model_dir, args.new_weights_file)
     print(f"Best Weights Will Be Stored @ {weight_file}")
