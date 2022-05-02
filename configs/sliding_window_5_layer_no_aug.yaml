@@ -1,6 +1,6 @@
 Misc:
   use_cpu: False
-  wandb_project_name: "BasicUnet_No_Augmentation_SlidingWindow"
+  wandb_project_name: "BasicUnet_No_Aug_5Layer_SlidingWindow"
 
 Inputs:
  meta_path_dir: ./data/meta
