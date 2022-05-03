@@ -17,7 +17,7 @@ warnings.filterwarnings("ignore")
 ################################# Local Imports ################################
 ################################################################################
 
-from staging_utils import (
+from oct.staging_utils import (
     build_wandb_monitor,
     create_path_to_new_weight_file,
     find_path_to_weight_file,
@@ -31,7 +31,7 @@ from staging_utils import (
     build_test_evaluators
 )
 
-from training import (
+from oct.training import (
     train
 )
 

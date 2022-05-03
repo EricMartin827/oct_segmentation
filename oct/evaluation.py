@@ -21,11 +21,11 @@ from monai.metrics import (
 ################################# Local Imports ################################
 ################################################################################
 
-from visual import (
+from oct.visual import (
     visualize,
 )
 
-from aux import (
+from oct.aux import (
     compute_auc,
     compute_jaccard,
     compute_accuracy,

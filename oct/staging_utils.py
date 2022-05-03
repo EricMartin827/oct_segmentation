@@ -3,10 +3,8 @@
 ################################################################################
 
 import os
-import sys
 import yaml
 import argparse
-import logging
 
 from datetime import datetime
 
@@ -33,11 +31,11 @@ import wandb
 ################################# Local Imports ################################
 ################################################################################
 
-from dataset import (
+from oct.dataset import (
     OctDataset
 )
 
-from evaluation import (
+from oct.evaluation import (
     Evaluator,
     TrainEvaluator
 )

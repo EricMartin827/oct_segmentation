@@ -14,7 +14,7 @@ from monai.transforms import (
 ################################# Local Imports ################################
 ################################################################################
 
-from aux import (
+from oct.aux import (
     predict
 )
 
