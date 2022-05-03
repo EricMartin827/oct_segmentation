@@ -45,9 +45,11 @@ def visualize(image, mask, output, uncertainty=None,
     plt.subplots_adjust(wspace=.1, hspace=.05)
 
     if (filepath):
-        plt.savefig(filepath)
+        plt.savefig(filepath, facecolor='w', transparent=False)
     else:
         plt.show()
+
+    plt.close('all')
 
 def visualize_group(model, loader, K=1, uncertainty=True, device="cuda"):
 

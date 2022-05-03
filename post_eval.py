@@ -53,13 +53,10 @@ class PostEvaluationImageGenertor:
         self.device = device
         self.desc = desc
 
-        if not os.path.exists(self.output_dir):
-            raise ValueError(f"{self.output_dir} Does Not Exist!")
-
     def __call__(self, model, loader, output_dir):
 
-        if not os.path.exists(self.output_dir):
-            raise ValueError(f"{self.output_dir} Does Not Exist!")
+        if not os.path.exists(output_dir):
+            raise ValueError(f"{output_dir} Does Not Exist!")
 
         return self.__evaluate(
             model=model,
@@ -91,6 +88,7 @@ class PostEvaluationImageGenertor:
 
         sample = 0
         argmax = AsDiscrete(argmax=True, to_onehot=None)
+        dice_metrics = []
 
         # produce predictions for each batch
         with torch.no_grad():
@@ -132,7 +130,7 @@ class PostEvaluationImageGenertor:
                     img     = image[0].cpu()
                     mask    = label[0].cpu()
                     preds   = argmax(prob)[0].cpu()
-                    entropy = uncertainty[0].cpu()
+                    entropy = uncertainty.cpu()
 
                     visualize(image=img,
                               mask=mask,
