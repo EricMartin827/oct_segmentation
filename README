@@ -1,9 +1,26 @@
-oct_segmetation
+# OCT_segmentation
 
-Before Running Unzip data.zip in the data directory.
+OCT_segmentation is a python project that works with OCT images from the retina of rats to segment RNFL layer and total retina layer.
 
-TODO:
-	* Add Documentation and Function Descriptions
-	* Set Up A Script For Automatically Install Python Environment
-	* Set Up Space For Jupyert-Notebooks To View Data and Prototype
-	* Integrate Weights And Biases
+This study is based on the course project of Georgia Tech CS7643 Deep Learning. It is an ongoing project with future improvement.
+
+In this repo you will find resources to:
+* Preprocess OCT data
+* Run a Monai U-Net model for three-class retina segmentation (backgroudn, RNFL layer, other retina layers) with different configurations
+* Post-analysis of the segmentation results
+
+A summary of the study can be found in `report.pdf`.
+
+## Data 
+
+Data contains 288 images from 60 rats acquired at the Feola Lab at Emory University. OCT scans were collected by Bioptigen 4300 (Leica Microsystems). Images were then registered and averaged leading to a sample size of 4 scans per eye. Animals had unilateral RGC injury by ocular hypertension (n=38, 3-10 month Brown Norway rats) or optic nerve crush (n=12, 9-10 month Long-Evans rats); contralateral eyes serving as controls. Scans were acquired at 4- and 8- (hypertensive cohort) or 12- (crush cohort) weeks after injury. We consider scans from the same animal acquired at each time point as independent.
+These scans were manually annotated by trained human annotators to create the ground truths. 
+
+## Scripts
+`scripts/main.py` Inputs raw EEG files, performs high and low pass bandwidth filters, epoch segmentation, and feature extraction
+
+`scripts/consolidation.py` Combines multiple preprocessed datasets of same or different subjects into a combined dataset 
+
+`scripts/eeg_classifcation.py` Runs five seizure classification algorithms for a given dataset
+
+`scripts/pyeeg.py` Useful functions to extra time-domain and frequency-domain features from raw EEG [2]
