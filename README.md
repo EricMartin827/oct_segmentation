@@ -23,3 +23,7 @@ These scans were manually annotated by trained human annotators to create the gr
 `notebooks/post_training_evaluation` Jupyter notebooks that contain post-training analysis of segmentation results
 
 `oct` main functions used to train and evaluate the U-Net.
+
+## Example Segmentation
+![Test-9](https://github.com/EricMartin827/oct_segmentation/blob/master/examples/Test-9.png)
+![Test-40](https://github.com/EricMartin827/oct_segmentation/blob/master/examples/Test-40.png)
