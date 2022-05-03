@@ -1,15 +1,14 @@
-# OCT_segmentation
+# Ret-U-Net for OCT RNFL Segmentation
 
-OCT_segmentation is a python project that works with OCT images from the retina of rats to segment RNFL layer and total retina layer.
+This project develops a deep learning model and pipeline to segment the RNFL layer of retina OCT images for rats.
 
-This study is based on the course project of Georgia Tech CS7643 Deep Learning. It is an ongoing project with future improvement.
+This study is based on the course project of Georgia Tech CS7643 Deep Learning. A summary of the study can be found in the PDF report. It is an ongoing project with future improvement.
 
 In this repo you will find resources to:
 * Preprocess OCT data
 * Run a Monai U-Net model for three-class retina segmentation (backgroudn, RNFL layer, other retina layers) with different configurations
 * Post-analysis of the segmentation results
 
-A summary of the study can be found in `report.pdf`.
 
 ## Data 
 
@@ -17,10 +16,10 @@ Data contains 288 images from 60 rats acquired at the Feola Lab at Emory Univers
 These scans were manually annotated by trained human annotators to create the ground truths. 
 
 ## Scripts
-`scripts/main.py` Inputs raw EEG files, performs high and low pass bandwidth filters, epoch segmentation, and feature extraction
+`configs` Configuration files
 
-`scripts/consolidation.py` Combines multiple preprocessed datasets of same or different subjects into a combined dataset 
+`data` Preprocessed OCT data (train/val/test) and augmented data.
 
-`scripts/eeg_classifcation.py` Runs five seizure classification algorithms for a given dataset
+`notebooks/post_training_evaluation` Jupyter notebooks that contain post-training analysis of segmentation results
 
-`scripts/pyeeg.py` Useful functions to extra time-domain and frequency-domain features from raw EEG [2]
+`oct` main functions used to train and evaluate the U-Net.
